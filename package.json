@@ -1,0 +1,22 @@
+{
+  "name": "hexo-article-recommender",
+  "version": "0.0.1-alpha.1",
+  "description": "A Hexo plugin to display intelligent recommended posts based on TF-IDF and cosine similarity.一个为Hexo博客提供智能文章推荐的插件，基于TF-IDF与余弦相似度算法，在文章末尾或者自定义地方添加“相关文章”。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No test specified\""
+  },
+  "keywords": ["hexo", "推荐文章", "related posts", "tf-idf", "中文分词", "hexo-plugin"],
+  "author": "i囡漫笔 <inmb@acbug.cn>",
+  "license": "GPL-3.0-only",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "hexo": {
+    "version": ">=5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourname/hexo-recommended-posts.git"
+  }
+}
