@@ -1,4 +1,4 @@
 module.exports = hexo => {
-  // Register helper （注册 helper）
+  console.log('✅ Loading hexo-article-recommender...');
   require('./lib/helper')(hexo);
 };
