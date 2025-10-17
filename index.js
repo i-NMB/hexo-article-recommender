@@ -1,12 +1,12 @@
 'use strict';
 
 module.exports = hexo => {
-  hexo.log.info('✅ Loading hexo-article-recommender plugin...');
+  hexo.log.info('✅ Loading hexo-article-recommender plugin (v0.0.1-alpha.4)...');
   try {
-    require('./lib/helper')(hexo);
-    hexo.log.info('✅ Helper "recommended_posts_full" registered.');
+    require('./lib/register')(hexo);
+    hexo.log.info('✅ Plugin hexo-article-recommender loaded successfully.');
   } catch (err) {
-    hexo.log.error('❌ Failed to load helper:', err.message);
+    hexo.log.error('❌ Failed to load hexo-article-recommender:', err.message);
     throw err;
   }
 };
