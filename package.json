@@ -1,16 +1,37 @@
 {
   "name": "hexo-article-recommender",
-  "version": "0.0.2-alpha.1",
-  "description": "A Hexo plugin to display intelligent recommended posts based on TF-IDF and cosine similarity.一个为Hexo博客提供智能文章推荐的插件，基于TF-IDF与余弦相似度算法，在文章末尾或者自定义地方添加“相关文章”。",
+  "version": "1.0.2-Beta.1",
+  "description": "A Hexo plugin to display intelligent recommended posts based on TF-IDF and cosine similarity. 一个为 Hexo 博客提供智能文章推荐的插件，基于 TF-IDF 与余弦相似度算法，在文章末尾或自定义位置添加“相关文章”。",
   "main": "index.js",
+  "type": "commonjs",
+  "files": [
+    "index.js",
+    "lib/",
+    "templates/"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/i-NMB/hexo-article-recommender.git"
   },
+  "homepage": "https://github.com/i-NMB/hexo-article-recommender",
+  "bugs": {
+    "url": "https://github.com/i-NMB/hexo-article-recommender/issues"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["hexo", "推荐文章", "related posts", "tf-idf", "中文分词", "hexo-plugin"],
-  "author": "iNMB",
-  "license": "AGPL-3.0-only"
+  "keywords": [
+    "hexo",
+    "hexo-plugin",
+    "related posts",
+    "recommended articles",
+    "文章推荐",
+    "相关文章",
+    "tf-idf",
+    "cosine similarity",
+    "chinese nlp",
+    "中文分词"
+  ],
+  "author": "iNMB<inmb@acbug.cn>(https://i-nmb.cn)",
+  "license": "AGPL-3.0-only",
 }
