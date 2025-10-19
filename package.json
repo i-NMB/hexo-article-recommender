@@ -1,6 +1,6 @@
 {
   "name": "hexo-article-recommender",
-  "version": "1.0.2-Beta.3",
+  "version": "1.0.2",
   "description": "A Hexo plugin to display intelligent recommended posts based on TF-IDF and cosine similarity. 一个为 Hexo 博客提供智能文章推荐的插件，基于 TF-IDF 与余弦相似度算法，在文章末尾或自定义位置添加“相关文章”。",
   "main": "index.js",
   "type": "commonjs",
