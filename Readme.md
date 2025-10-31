@@ -91,9 +91,9 @@ Simply enable `inject: true` (the default setting), and the plugin will automa
 ### 方式二：手动调用（高级定制）/Method 2: Manual invocation (Advanced customization)
 
 
-如果您不想让推荐模块注入到文章页面底部，请在主博客`_config.yml`**关闭自动注入**`inject: false` 。以EJS为例，NJK同理，在你的主题模板（如 `post.ejs` 或 `post.swig`）中调用 Helper：
+该插件通常通过 Hexo 的 injects 机制，将推荐内容注入到主题模板中的`</article> `标签之后。但是如果遇到`</article>`标签之后不适用，或者在该位置的背景颜色与插件默认的颜色不搭，可以尝试手动注入模板。如果您不想让推荐模块注入到文章页面底部，请在主博客`_config.yml`**关闭自动注入**`inject: false` 。以EJS为例，NJK同理，在你的主题模板（如 `post.ejs` 或 `post.swig`）中调用 Helper：
 
-If you do not want the recommendation module to be injected at the bottom of article pages, please **disable auto-injection** by setting `inject: false` in your main blog’s `_config.yml`.The example below uses EJS; the same principle applies to Nunjucks (NJK).Call the Helper in your theme template (e.g., `post.ejs` or `post.swig`):
+This plugin typically injects recommended content after the `</article>` tag in theme templates through Hexo’s injects mechanism. However, if this position is not suitable, or if the background color conflicts with the plugin’s default color, you may try manual injection. If you do not want the recommendation module to be injected at the bottom of article pages, please **disable automatic injection** in your main blog’s `_config.yml` by setting `inject: false`. Taking EJS as an example (the same applies to NJK), call the Helper in your theme template (such as `post.ejs` or `post.swig`):
 
 
 
@@ -134,8 +134,23 @@ When calling `recommended_posts_full(post, count)` or using auto-injection, ea
 
 
 
-### 示例/Example：
-```html
+### 示例|Example：
+
+#### EJS 模板（如 landscape、fluid 等主题）|EJS templates (such as landscape, fluid, and other themes)
+
+在你的**主题目录**下（如 `/themes/your-theme/layout/_partial/`）新建文件：
+
+_Create a new file in your theme directory (e.g.,` /themes/your-theme/layout/_partial/`):
+
+```
+themes/your-theme/layout/_partial/article-recommender.ejs
+```
+
+内容为：
+
+The content is as follows:
+
+```ejs
 <% if (posts.length) { %>
 <div class="hexo-article-recommender-section">
   <div class="hexo-article-recommender-section-divider">
@@ -144,7 +159,7 @@ When calling `recommended_posts_full(post, count)` or using auto-injection, ea
       <span><%= recommendedTitle %></span>
     </div>
   </div>
-
+ 
   <div class="hexo-article-recommender-posts">
     <% posts.forEach((link, idx) => { %>
       <% const bgColors = ['#6a89cc, #4a69bd', '#e55039, #eb2f06', '#3dc1d3, #0fb9b1', '#f6b93b, #e55039'] %>
@@ -152,14 +167,14 @@ When calling `recommended_posts_full(post, count)` or using auto-injection, ea
       <div class="hexo-article-recommender-post-card" data-bg="<%= bgColors[idx % bgColors.length] %>">
         <!-- 左上角：站内标签 -->
         <div class="hexo-article-recommender-site-tag">站内</div>
-
+ 
         <!-- 左下角：关系类型标签 + 相关度 -->
         <div class="hexo-article-recommender-relation-tag <%= link._recommendType === 'related' ? 'related' : 'fallback' %>">
           <%= link._recommendType === 'related' ? '相关' : '推荐' %>
           <span class="hexo-article-recommender-score">(<%= (link._recommendScore).toFixed(1) %>%)
         </span>
         </div>
-
+ 
         <div class="hexo-article-recommender-card-header">
           <div class="hexo-article-recommender-reading-time">
             <i class="fas fa-clock"></i>
@@ -188,8 +203,578 @@ When calling `recommended_posts_full(post, count)` or using auto-injection, ea
   </div>
   <h2 class="hexo-article-recommender-section-over">--- over ---</h2>
 </div>
+ 
+<style>
+.hexo-article-recommender-section {
+  margin-top: 60px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+ 
+.hexo-article-recommender-section-divider {
+  position: relative;
+  margin: 60px 0;
+}
+ 
+.hexo-article-recommender-divider-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #6a89cc, transparent);
+}
+ 
+.hexo-article-recommender-divider-text {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 0 15px;
+}
+ 
+.hexo-article-recommender-divider-text span {
+  color: #6a89cc;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+ 
+.hexo-article-recommender-section-over {
+  text-align: center;
+  margin: 30px;
+  color: #9e9e9e;
+}
+ 
+.hexo-article-recommender-posts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  justify-content: center;
+}
+ 
+.hexo-article-recommender-post-card {
+  width: 280px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 270px;
+  position: relative;
+}
+ 
+.hexo-article-recommender-post-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+ 
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+ 
+.hexo-article-recommender-card-header {
+  height: 60px;
+  position: relative;
+  background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite alternate;
+}
+ 
+.hexo-article-recommender-post-card[data-bg^="#6a89cc"] .hexo-article-recommender-card-header {
+  --bg-start: #6a89cc; --bg-end: #4a69bd;
+}
+.hexo-article-recommender-post-card[data-bg^="#e55039"] .hexo-article-recommender-card-header {
+  --bg-start: #e55039; --bg-end: #eb2f06;
+}
+.hexo-article-recommender-post-card[data-bg^="#3dc1d3"] .hexo-article-recommender-card-header {
+  --bg-start: #3dc1d3; --bg-end: #0fb9b1;
+}
+.hexo-article-recommender-post-card[data-bg^="#f6b93b"] .hexo-article-recommender-card-header {
+  --bg-start: #f6b93b; --bg-end: #e55039;
+}
+ 
+.hexo-article-recommender-reading-time {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(4px);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+ 
+.hexo-article-recommender-card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 60px);
+  justify-content: space-between;
+}
+ 
+.hexo-article-recommender-post-title {
+  margin-top: 0;
+  font-size: 1.2em;
+  line-height: 1.4;
+  color: #2c3e50;
+}
+ 
+.hexo-article-recommender-post-title a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+ 
+.hexo-article-recommender-post-title a:hover {
+  color: #6a89cc;
+}
+ 
+.hexo-article-recommender-post-excerpt {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 10px 0;
+  overflow: hidden;
+}
+ 
+.hexo-article-recommender-author {
+  display: flex;
+  align-items: center;
+}
+ 
+.hexo-article-recommender-author-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  margin-right: 10px;
+}
+ 
+.hexo-article-recommender-author-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+ 
+.hexo-article-recommender-author-title {
+  font-size: 12px;
+  color: #888;
+}
+ 
+/* ========== 左上角：站内标签 ========== */
+.hexo-article-recommender-site-tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(42, 170, 138, 0.9);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 0 0 8px 0;
+  z-index: 2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+ 
+/* ========== 左下角：关系类型标签 ========== */
+.hexo-article-recommender-relation-tag {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 0 8px 0 0;
+  z-index: 2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+ 
+.hexo-article-recommender-relation-tag.related {
+  background-color: rgba(42, 170, 138, 0.9); /* 绿色：相关 */
+}
+ 
+.hexo-article-recommender-relation-tag.fallback {
+  background-color: rgba(229, 80, 57, 0.9); /* 橙红：推荐 */
+}
+ 
+.hexo-article-recommender-post-card:hover .hexo-article-recommender-relation-tag {
+  opacity: 1;
+  transform: translateY(0);
+}
+ 
+/* 相关度分数样式 */
+.hexo-article-recommender-relation-tag .hexo-article-recommender-score {
+  font-size: 10px;
+  opacity: 0.8;
+  margin-left: 4px;
+}
+ 
+/* 响应式 */
+@media (max-width: 768px) {
+  .hexo-article-recommender-posts {
+    flex-direction: column;
+    align-items: center;
+  }
+  .hexo-article-recommender-post-card {
+    width: calc(100% - 30px);
+    max-width: 400px;
+  }
+}
+</style>
 <% } %>
 ```
+
+之后在对应的post模板中（\themes\you-theme-name\layout\post.ejs）找到想注入的地方（自己喜欢在哪就添加在哪）添加，其中include内容要指向上一步添加的recommended-posts.ejs文件路径
+
+Then, in the corresponding post template (e.g., \themes\your-theme-name\layout\post.ejs), find the desired injection location (add it wherever you prefer) and add the include statement, where the include content should point to the file path of the recommended-posts.ejs file added in the previous step.
+
+```ejs
+<% 
+  const cfg = config.article_recommender || {};
+  const _ar_data = { 
+    posts: recommended_posts_full(page, (cfg.default_count) || 3),
+    recommendedTitle: cfg.recommended_title || '推荐文章主题推荐'
+  };
+%>
+<%- partial('_partial/article-recommender', _ar_data) %>
+```
+
+#### Nunjucks模板（如NexT主题等）|Nunjucks templates (such as NexT theme, etc.)
+
+以NexT为例，在\themes\next\layout\_partials中新建文件
+
+Taking NexT as an example, create a new file in `\themes\next\layout_partials`
+
+```bash
+\themes\next\layout\_partials\recommended-posts.njk
+```
+
+内容为:
+
+The content is as follows:
+
+```html
+{%- if posts and posts.length > 0 -%}
+<div class="hexo-article-recommender-section">
+  <div class="hexo-article-recommender-section-divider">
+    <div class="hexo-article-recommender-divider-line"></div>
+    <div class="hexo-article-recommender-divider-text">
+      <span>{{ recommendedTitle or '推荐文章' }}</span>
+    </div>
+  </div>
+ 
+  <div class="hexo-article-recommender-posts">
+    {%- for link in posts -%}
+      {%- set bgColors = [
+        '#6a89cc, #4a69bd',
+        '#e55039, #eb2f06',
+        '#3dc1d3, #0fb9b1',
+        '#f6b93b, #e55039'
+      ] -%}
+      {%- set avatarColors = ['#4a69bd', '#e55039', '#3dc1d3', '#f6b93b'] -%}
+      {%- set idx = loop.index0 -%}
+      <div class="hexo-article-recommender-post-card" data-bg="{{ bgColors[idx % bgColors.length] }}">
+        <div class="hexo-article-recommender-site-tag">站内</div>
+ 
+        <div class="hexo-article-recommender-relation-tag {{ 'related' if link._recommendType == 'related' else 'fallback' }}">
+          {{ '相关' if link._recommendType == 'related' else '推荐' }}
+          <span class="hexo-article-recommender-score">({{ link._recommendScore | round(1) }}%)</span>
+        </div>
+ 
+        <div class="hexo-article-recommender-card-header">
+          <div class="hexo-article-recommender-reading-time">
+            <i class="fas fa-clock"></i>
+            {{ link.minutes or link.reading_time or (link.symbols_count_time and link.symbols_count_time.mins) or '阅读' }}分钟
+          </div>
+        </div>
+        <div class="hexo-article-recommender-card-content">
+          <h4 class="hexo-article-recommender-post-title">
+            <a href="{{ url_for(link.path) }}">{{ link.title }}</a>
+          </h4>
+          <p class="hexo-article-recommender-post-excerpt">
+            {{ (link.description or (link.excerpt and strip_html(link.excerpt)) or (link.content and strip_html(link.content)) or '点击查看推荐内容。') | truncate(80, false) }}
+          </p>
+          <div class="hexo-article-recommender-author">
+            <div class="hexo-article-recommender-author-avatar" style="background: {{ avatarColors[idx % avatarColors.length] }};">
+              {{ idx + 1 }}
+            </div>
+            <div class="hexo-article-recommender-author-info">
+              <div class="hexo-article-recommender-author-name">{{ link.author or link.author_name or link.author_id or '本站作者' }}</div>
+              <div class="hexo-article-recommender-author-title">{{ link.author_title or '原创文章' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+  <h2 class="hexo-article-recommender-section-over">--- over ---</h2>
+</div>
+ 
+<style>
+.hexo-article-recommender-section {
+  margin-top: 60px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+ 
+.hexo-article-recommender-section-divider {
+  position: relative;
+  margin: 60px 0;
+}
+ 
+.hexo-article-recommender-divider-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #6a89cc, transparent);
+}
+ 
+.hexo-article-recommender-divider-text {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 0 15px;
+}
+ 
+.hexo-article-recommender-divider-text span {
+  color: #6a89cc;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+ 
+.hexo-article-recommender-section-over {
+  text-align: center;
+  margin: 30px;
+  color: #9e9e9e;
+}
+ 
+.hexo-article-recommender-posts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  justify-content: center;
+}
+ 
+.hexo-article-recommender-post-card {
+  width: 280px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 270px;
+  position: relative;
+}
+ 
+.hexo-article-recommender-post-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+ 
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+ 
+.hexo-article-recommender-card-header {
+  height: 60px;
+  position: relative;
+  background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite alternate;
+}
+ 
+.hexo-article-recommender-post-card[data-bg^="#6a89cc"] .hexo-article-recommender-card-header {
+  --bg-start: #6a89cc; --bg-end: #4a69bd;
+}
+.hexo-article-recommender-post-card[data-bg^="#e55039"] .hexo-article-recommender-card-header {
+  --bg-start: #e55039; --bg-end: #eb2f06;
+}
+.hexo-article-recommender-post-card[data-bg^="#3dc1d3"] .hexo-article-recommender-card-header {
+  --bg-start: #3dc1d3; --bg-end: #0fb9b1;
+}
+.hexo-article-recommender-post-card[data-bg^="#f6b93b"] .hexo-article-recommender-card-header {
+  --bg-start: #f6b93b; --bg-end: #e55039;
+}
+ 
+.hexo-article-recommender-reading-time {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(4px);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+ 
+.hexo-article-recommender-card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 60px);
+  justify-content: space-between;
+}
+ 
+.hexo-article-recommender-post-title {
+  margin-top: 0;
+  font-size: 1.2em;
+  line-height: 1.4;
+  color: #2c3e50;
+}
+ 
+.hexo-article-recommender-post-title a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+ 
+.hexo-article-recommender-post-title a:hover {
+  color: #6a89cc;
+}
+ 
+.hexo-article-recommender-post-excerpt {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 10px 0;
+  overflow: hidden;
+}
+ 
+.hexo-article-recommender-author {
+  display: flex;
+  align-items: center;
+}
+ 
+.hexo-article-recommender-author-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  margin-right: 10px;
+}
+ 
+.hexo-article-recommender-author-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+ 
+.hexo-article-recommender-author-title {
+  font-size: 12px;
+  color: #888;
+}
+ 
+/* ========== 左上角：站内标签 ========== */
+.hexo-article-recommender-site-tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(42, 170, 138, 0.9);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 0 0 8px 0;
+  z-index: 2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+ 
+/* ========== 左下角：关系类型标签 ========== */
+.hexo-article-recommender-relation-tag {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 0 8px 0 0;
+  z-index: 2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+ 
+.hexo-article-recommender-relation-tag.related {
+  background-color: rgba(42, 170, 138, 0.9); /* 绿色：相关 */
+}
+ 
+.hexo-article-recommender-relation-tag.fallback {
+  background-color: rgba(229, 80, 57, 0.9); /* 橙红：推荐 */
+}
+ 
+.hexo-article-recommender-post-card:hover .hexo-article-recommender-relation-tag {
+  opacity: 1;
+  transform: translateY(0);
+}
+ 
+/* 相关度分数样式 */
+.hexo-article-recommender-relation-tag .hexo-article-recommender-score {
+  font-size: 10px;
+  opacity: 0.8;
+  margin-left: 4px;
+}
+ 
+/* 响应式 */
+@media (max-width: 768px) {
+  .hexo-article-recommender-posts {
+    flex-direction: column;
+    align-items: center;
+  }
+  .hexo-article-recommender-post-card {
+    width: calc(100% - 30px);
+    max-width: 400px;
+  }
+}
+</style>
+{%- endif -%}
+```
+
+然后，在对应的post模板中（`/themes/you-theme-name/layout/post.njk`）找到想注入的地方（自己喜欢在哪就添加在哪）添加，其中include内容要指向上一步添加的`recommended-posts.njk`文件路径。
+
+Then, in the corresponding post template (e.g., `/themes/your-theme-name/layout/post.njk`), find the desired injection location (add it wherever you prefer) and add the include statement, where the include content should point to the file path of the `recommended-posts.njk` file added in the previous step.
+
+```njk
+  {% set cfg = config.article_recommender or {} %}
+  {% set _ar_data = {
+    posts: recommended_posts_full(page, cfg.default_count or 3),
+    recommendedTitle: cfg.recommended_title or '推荐文章主题推荐'
+  } %}
+  {% set posts = _ar_data.posts %}
+  {% set recommendedTitle = _ar_data.recommendedTitle %}
+  {% include '_partials/recommended-posts.njk' %}
+```
+
+
+
 ---
 
 
